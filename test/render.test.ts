@@ -70,21 +70,21 @@ describe('render planning', () => {
     expect(rel(renderValuesFiles(e, root, 'environments/uat/values.yaml'))).toEqual(['environments/uat/values.yaml']);
     expect(renderValuesFiles(e, root, null)).toEqual([]);
     expect(helmTemplateArgs(root, { valuesFiles: ['a.yaml', 'b.yaml'] })).toEqual(['template', 'release-name', envs, '-f', 'a.yaml', '-f', 'b.yaml']);
-    expect(helmTemplateArgs(root, { valuesFiles: ['a.yaml'], releaseName: 'pinot', namespace: 'data-uat' })).toEqual([
+    expect(helmTemplateArgs(root, { valuesFiles: ['a.yaml'], releaseName: 'my-app', namespace: 'team-uat' })).toEqual([
       'template',
-      'pinot',
+      'my-app',
       envs,
       '--namespace',
-      'data-uat',
+      'team-uat',
       '-f',
       'a.yaml',
     ]);
   });
 
   it('validates release and namespace names like helm / Kubernetes', () => {
-    expect(['pinot', 'my-app.v2', 'a'].map((n) => RELEASE_NAME.test(n))).toEqual([true, true, true]);
-    expect(['Pinot', '-a', 'a_b', 'x'.repeat(54)].map((n) => RELEASE_NAME.test(n))).toEqual([false, false, false, false]);
-    expect(['data-uat', 'default'].map((n) => NAMESPACE_NAME.test(n))).toEqual([true, true]);
+    expect(['my-app', 'my-app.v2', 'a'].map((n) => RELEASE_NAME.test(n))).toEqual([true, true, true]);
+    expect(['MyApp', '-a', 'a_b', 'x'.repeat(54)].map((n) => RELEASE_NAME.test(n))).toEqual([false, false, false, false]);
+    expect(['team-uat', 'default'].map((n) => NAMESPACE_NAME.test(n))).toEqual([true, true]);
     expect(['Data', 'a.b', 'x'.repeat(64)].map((n) => NAMESPACE_NAME.test(n))).toEqual([false, false, false]);
   });
 });
