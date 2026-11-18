@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "publisher": "local",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/wilsontw0423-design/helm-navigator.git"
@@ -233,9 +233,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify:render": "node scripts/verify-render.mjs",
-    "package": "npm run build && vsce package --no-dependencies --skip-license",
+    "package": "npm run build && vsce package --no-dependencies",
     "vscode:prepublish": "npm run build",
-    "package:colors": "cd colors && vsce package --no-dependencies --skip-license"
+    "package:colors": "cd colors && vsce package --no-dependencies"
   },
   "dependencies": {
     "yaml": "^2.6.0"

@@ -227,3 +227,7 @@ Marketplace) / `ovsx publish` (Open VSX).
 - A workspace without `Chart.yaml` (e.g. a repo with only `helm/*-values.yaml`) is not treated as a Helm project:
   its values files are still formatted, but the default-formatter prompt does not appear. Run
   *Helm Navigator: Use as Default Formatter in This Workspace* there if wanted.
+
+## License
+
+MIT, see `LICENSE`. The file icon theme in `colors/icons/` is based on VS Code's Seti theme (MIT); its notices are in `colors/icons/SETI-NOTICES.txt`.

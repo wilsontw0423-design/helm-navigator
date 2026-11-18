@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "publisher": "local",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/wilsontw0423-design/helm-navigator.git",
@@ -278,7 +278,8 @@
   },
   "files": [
     "README.md",
-    "icons/**"
+    "icons/**",
+    "LICENSE"
   ],
   "scripts": {
     "build:icons": "node scripts/build-icons.mjs"
