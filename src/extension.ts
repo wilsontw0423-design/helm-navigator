@@ -5,6 +5,7 @@ import { PackagedChartCache } from './core/archive';
 import { completeValues } from './core/completion';
 import { templateFindings, valuesFindings, type Finding } from './core/diagnostics';
 import { planRename, VALID_KEY } from './core/rename';
+import { registerRender } from './render';
 import { classify, formatHelmFile, type FormatOptions } from './core/format';
 import type { Chart } from './core/chartGraph';
 import { HelmIndex, type ChainItem, type FileRange } from './core/helmIndex';
@@ -246,6 +247,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand(PEEK_COMMAND, peekFromHover),
   );
   registerDiagnostics(context);
+  registerRender(context, () => index, isTemplateFile);
   void offerWorkspaceDefaults(context);
 }
 

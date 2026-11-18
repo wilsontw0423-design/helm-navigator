@@ -1,8 +1,8 @@
 {
   "name": "helm-navigator",
   "displayName": "Helm Navigator",
-  "description": "Formatter and cross-chart navigation for Helm charts: values.yaml, templates, _helpers.tpl, and parent/child (umbrella/sub) charts.",
-  "version": "0.1.0",
+  "description": "Helm chart support: dedicated languages for templates, helpers and values files, bidirectional navigation with multi-environment values, and a live helm template preview.",
+  "version": "0.2.0",
   "publisher": "local",
   "private": true,
   "license": "MIT",
@@ -180,6 +180,12 @@
             "Never change workspace settings"
           ],
           "description": "When a workspace contains a Helm chart, set Helm Navigator as the workspace default formatter for [yaml], [helm-template] and [helmignore] (written to .vscode/settings.json)."
+        },
+        "helmNavigator.helmPath": {
+          "type": "string",
+          "default": "helm",
+          "scope": "machine-overridable",
+          "markdownDescription": "Path to the `helm` executable used by *Render Chart* / *Render This Template* (`helm template`)."
         }
       }
     },
@@ -224,8 +230,66 @@
       {
         "command": "helmNavigator.useAsDefaultFormatter",
         "title": "Helm Navigator: Use as Default Formatter in This Workspace"
+      },
+      {
+        "command": "helmNavigator.renderTemplate",
+        "title": "Render This Template (helm template)",
+        "category": "Helm Navigator",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "helmNavigator.renderChart",
+        "title": "Render Chart (helm template)",
+        "category": "Helm Navigator",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "helmNavigator.setRenderRelease",
+        "title": "Set Release Name / Namespace (helm template)",
+        "category": "Helm Navigator"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "helmNavigator.renderTemplate",
+          "when": "resourceScheme == file && helmNavigator.isTemplate",
+          "group": "navigation"
+        },
+        {
+          "command": "helmNavigator.renderChart",
+          "when": "resourceScheme == file && helmNavigator.inChart && !helmNavigator.isTemplate",
+          "group": "navigation"
+        },
+        {
+          "command": "helmNavigator.renderChart",
+          "when": "resourceScheme == file && helmNavigator.isTemplate",
+          "group": "1_helm"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "helmNavigator.renderTemplate",
+          "when": "!explorerResourceIsFolder && resourcePath =~ /[\\\\/]templates[\\\\/]/",
+          "group": "7_helm@1"
+        },
+        {
+          "command": "helmNavigator.renderChart",
+          "when": "resourceFilename == Chart.yaml || !explorerResourceIsFolder && resourcePath =~ /[\\\\/]templates[\\\\/]/",
+          "group": "7_helm@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "helmNavigator.renderTemplate",
+          "when": "helmNavigator.inChart"
+        },
+        {
+          "command": "helmNavigator.renderChart",
+          "when": "helmNavigator.inChart"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "node scripts/build.mjs",

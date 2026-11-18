@@ -194,12 +194,13 @@ export class HelmIndex {
   /**
    * Values files of `chart`, lowest precedence first: the chart's own `values.yaml` (Helm always
    * loads it), then `valuesFileNames`, then the files of environment `env`. Without `env`: the files
-   * of every environment (for navigation, references, rename and diagnostics across environments).
+   * of every environment (for navigation, references, rename and diagnostics across environments);
+   * `null`: no environment at all (what `helm template` loads without `-f`, plus `valuesFileNames`).
    */
-  valuesFilesOf(chart: Chart, env?: string): string[] {
+  valuesFilesOf(chart: Chart, env?: string | null): string[] {
     // A packaged chart only ships its own values.yaml; user-specific names (values-prod.yaml) do not apply.
     const envs = this.environmentMap(chart);
-    const extra = env !== undefined ? (envs[env] ?? []) : Object.values(envs).flat();
+    const extra = env === null ? [] : env !== undefined ? (envs[env] ?? []) : Object.values(envs).flat();
     const names = chart.packagedFrom ? ['values.yaml'] : ['values.yaml', ...this.valuesFileNames, ...extra];
     const files = [...new Set(names.map((n) => path.join(chart.dir, n)))];
     return files.filter((f) => this.host.exists(f));
