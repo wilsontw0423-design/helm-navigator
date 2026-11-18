@@ -5,12 +5,14 @@ between `values.yaml`, templates, `_helpers.tpl`, and parent ↔ child charts.
 
 ## 安裝
 
+> **命令面板**：按 `Cmd+Shift+P`（Windows / Linux：`Ctrl+Shift+P`）打開，輸入指令名稱（例如 *Developer: Reload Window*）後按 Enter。下面寫「按 `Cmd+Shift+P` 執行」的步驟都是這樣操作。
+
 1. 到 [Releases](https://github.com/wilsontw0423-design/helm-navigator/releases/latest) 下載：
    - `helm-navigator-<版本>.vsix`：主擴充，**必裝**。
    - `helm-navigator-colors-<版本>.vsix`：IntelliJ 風格配色與檔案圖示，選裝。
 2. 依序安裝，**先裝主擴充，再裝 colors**（colors 依賴主擴充，順序反了會安裝失敗）：
    - **VS Code**：左側 Extensions 側欄 → 右上角 `…` → *Install from VSIX…*，選下載的檔案。
-     也可以用終端機（需先執行 *Shell Command: Install 'code' command in PATH*）：
+     也可以用終端機（需先按 `Cmd+Shift+P` 執行 *Shell Command: Install 'code' command in PATH*）：
 
      ```bash
      code --install-extension helm-navigator-0.1.0.vsix
@@ -18,11 +20,10 @@ between `values.yaml`, templates, `_helpers.tpl`, and parent ↔ child charts.
      ```
 
    - **Antigravity**：Extensions 側欄 → `…` → *Install from VSIX…*（Antigravity 沒有 CLI）。
-3. 執行 *Developer: Reload Window*。
-4. 打開含有 `Chart.yaml` 的資料夾，右下角會詢問是否把 Helm Navigator 設為這個 workspace 的預設 formatter，選
-   同意後會寫進該 workspace 的 `.vscode/settings.json`（如果那個檔案有被 git 追蹤，記得自己決定要不要 commit）。
-   不想被詢問：設定 `helmNavigator.autoSetDefaultFormatter` 為 `always` 或 `never`。
-5. 選用：*Preferences: File Icon Theme* → **Helm Navigator Icons (Seti)**，`_helpers.tpl` 才會有自己的圖示
+3. 按 `Cmd+Shift+P`（Windows / Linux：`Ctrl+Shift+P`），輸入並執行 *Developer: Reload Window*，讓擴充生效。
+4. 打開含有 `Chart.yaml` 的資料夾，右下角會詢問是否把 Helm Navigator 設為這個 workspace 的預設 formatter。
+   同意後會寫進該 workspace 的 `.vscode/settings.json`（如果那個檔案有被 git 追蹤，記得自己決定要不要 commit）。不想被詢問：設定 `helmNavigator.autoSetDefaultFormatter` 為 `always` 或 `never`。
+5. 選用：按 `Cmd+Shift+P`，執行 *Preferences: File Icon Theme* → **Helm Navigator Icons (Seti)**，`_helpers.tpl` 才會有自己的圖示
    （template 與 values 的圖示不切換也看得到）。
 
 ### 試試看
