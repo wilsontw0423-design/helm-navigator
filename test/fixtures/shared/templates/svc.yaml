@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "umbrella.fullname" . }}-shared
+  annotations:
+    replicas: {{ .Values.replicas | quote }}
+    missing: {{ .Values.missingKey | quote }}
+    optional: {{ .Values.optionalKey | default "x" | quote }}
+    {{- with .Values.podAnnotations }}
+    extra: {{ $.Values.podAnnotations.anything | quote }}
+    {{- end }}
+    {{- if .Values.missingKey }}
+    nested: {{ .Values.replicas.deeper }}
+    {{- end }}

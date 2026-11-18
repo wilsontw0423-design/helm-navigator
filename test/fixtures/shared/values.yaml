@@ -1,0 +1,7 @@
+replicas: 1
+# diagnostics fixture: nothing reads these
+unusedKey: true
+unusedMap:
+  a: 1
+  b: 2
+podAnnotations: {}

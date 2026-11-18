@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "umbrella.fullname" . }}-child
+  labels:
+    env: {{ $.Values.global.env }}
+spec:
+  template:
+    spec:
+      containers:
+        {{- with .Values.image }}
+        - name: app
+          image: "{{ .repository }}:{{ .tag }}"
+        {{- end }}
+        - name: sidecar
+          image: {{ include "child.image" .Values.image | quote }}
+          ports:
+          {{- range $i, $item := .Values.items }}
+            - name: {{ $item.name }}
+              containerPort: {{ .port }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: TAG
+              value: {{ index .Values "image" "tag" | quote }}

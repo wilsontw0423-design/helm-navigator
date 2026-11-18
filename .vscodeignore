@@ -1,0 +1,14 @@
+**/*.map
+.gitignore
+.vscode/**
+AGENTS.md
+CLAUDE.html
+CLAUDE.md
+colors/**
+docs/**
+node_modules/**
+scripts/**
+src/**
+test/**
+tsconfig.json
+vitest.config.*

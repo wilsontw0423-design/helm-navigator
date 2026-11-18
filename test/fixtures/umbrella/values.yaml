@@ -1,0 +1,11 @@
+# parent overrides
+global:
+  env: prod
+kid:
+  image:
+    tag: "2.0"
+  items:
+    - name: from-parent
+shared:
+  replicas: 3
+team: from-parent

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Helm Values",
+  "scopeName": "source.helm-values",
+  "patterns": [{ "include": "source.yaml" }]
+}

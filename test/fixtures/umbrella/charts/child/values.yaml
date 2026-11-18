@@ -1,0 +1,13 @@
+global:
+  env: dev
+image:
+  repository: nginx
+  tag: "1.0"
+items:
+  - name: a
+    port: 80
+resources: {}
+exports:
+  data:
+    team: from-child
+    tier: backend

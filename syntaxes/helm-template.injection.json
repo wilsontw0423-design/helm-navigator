@@ -1,0 +1,86 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "template.helm.injection",
+  "injectionSelector": "L:source.helm-template -comment.block.helm, L:source.helm-values -comment.block.helm",
+  "patterns": [
+    {
+      "include": "#action"
+    }
+  ],
+  "repository": {
+    "action": {
+      "patterns": [
+        {
+          "name": "comment.block.helm",
+          "begin": "\\{\\{-?\\s*/\\*",
+          "end": "\\*/\\s*-?\\}\\}"
+        },
+        {
+          "name": "meta.embedded.block.helm",
+          "begin": "\\{\\{-?",
+          "end": "-?\\}\\}",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.begin.helm"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.helm"
+            }
+          },
+          "patterns": [
+            {
+              "name": "string.quoted.double.helm",
+              "begin": "\"",
+              "end": "\"",
+              "patterns": [
+                {
+                  "name": "constant.character.escape.helm",
+                  "match": "\\\\."
+                }
+              ]
+            },
+            {
+              "name": "string.quoted.raw.helm",
+              "begin": "`",
+              "end": "`"
+            },
+            {
+              "name": "keyword.control.helm",
+              "match": "\\b(if|else|end|range|with|define|block|template|break|continue)\\b"
+            },
+            {
+              "name": "constant.language.helm",
+              "match": "\\b(true|false|nil)\\b"
+            },
+            {
+              "name": "constant.numeric.helm",
+              "match": "-?\\b\\d+(\\.\\d+)?\\b"
+            },
+            {
+              "name": "variable.other.helm",
+              "match": "\\$[A-Za-z0-9_]*"
+            },
+            {
+              "name": "variable.language.helm",
+              "match": "\\.(Values|Release|Chart|Files|Capabilities|Template|Subcharts)\\b"
+            },
+            {
+              "name": "variable.other.member.helm",
+              "match": "\\.[A-Za-z_][A-Za-z0-9_]*"
+            },
+            {
+              "name": "keyword.operator.helm",
+              "match": ":=|=|\\|"
+            },
+            {
+              "name": "support.function.helm",
+              "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

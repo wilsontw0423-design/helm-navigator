@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Helm Template",
+  "scopeName": "source.helm-template",
+  "patterns": [
+    { "include": "template.helm.injection#action" },
+    { "include": "source.yaml" }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "name": "helm-navigator-colors",
+  "displayName": "Helm Navigator Colors & Icons",
+  "description": "IntelliJ-style colors and file icons for Helm Values and Helm Template files (the languages of Helm Navigator). Disable this extension to get your theme's colors and icons back.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wilsontw0423-design/helm-navigator.git",
+    "directory": "colors"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "keywords": [
+    "helm",
+    "colors",
+    "yaml",
+    "go template",
+    "icons"
+  ],
+  "extensionDependencies": [
+    "local.helm-navigator"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "helm-template",
+        "icon": {
+          "light": "./icons/helm-template-light.svg",
+          "dark": "./icons/helm-template.svg"
+        }
+      },
+      {
+        "id": "helm-values",
+        "icon": {
+          "light": "./icons/helm-values-light.svg",
+          "dark": "./icons/helm-values.svg"
+        }
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "helm-navigator-icons",
+        "label": "Helm Navigator Icons (Seti)",
+        "path": "./icons/helm-navigator-icon-theme.json"
+      }
+    ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "name": "Helm: YAML keys",
+            "scope": [
+              "source.helm-values entity.name.tag.yaml",
+              "source.helm-template entity.name.tag.yaml"
+            ],
+            "settings": {
+              "foreground": "#56A8F5"
+            }
+          },
+          {
+            "name": "Helm: YAML quoted strings",
+            "scope": [
+              "source.helm-values string.quoted.double.yaml",
+              "source.helm-values string.quoted.single.yaml",
+              "source.helm-template string.quoted.double.yaml",
+              "source.helm-template string.quoted.single.yaml"
+            ],
+            "settings": {
+              "foreground": "#6AAB73"
+            }
+          },
+          {
+            "name": "Helm: YAML plain scalars",
+            "scope": [
+              "source.helm-values string.unquoted.plain.out.yaml",
+              "source.helm-values string.unquoted.plain.in.yaml",
+              "source.helm-template string.unquoted.plain.out.yaml",
+              "source.helm-template string.unquoted.plain.in.yaml"
+            ],
+            "settings": {
+              "foreground": "#BCBEC4"
+            }
+          },
+          {
+            "name": "Helm: YAML numbers",
+            "scope": [
+              "source.helm-values constant.numeric",
+              "source.helm-template constant.numeric"
+            ],
+            "settings": {
+              "foreground": "#2AACB8"
+            }
+          },
+          {
+            "name": "Helm: YAML true/false/null",
+            "scope": [
+              "source.helm-values constant.language",
+              "source.helm-template constant.language"
+            ],
+            "settings": {
+              "foreground": "#CF8E6D"
+            }
+          },
+          {
+            "name": "Helm: YAML comments",
+            "scope": [
+              "source.helm-values comment",
+              "source.helm-values punctuation.definition.comment.yaml",
+              "source.helm-template comment",
+              "source.helm-template punctuation.definition.comment.yaml"
+            ],
+            "settings": {
+              "foreground": "#7A7E85"
+            }
+          },
+          {
+            "name": "Helm: YAML block scalar | >",
+            "scope": [
+              "source.helm-values keyword.control.flow.block-scalar",
+              "source.helm-template keyword.control.flow.block-scalar"
+            ],
+            "settings": {
+              "foreground": "#CF8E6D"
+            }
+          },
+          {
+            "name": "Helm: YAML anchors and aliases",
+            "scope": [
+              "source.helm-values keyword.control.flow.anchor.yaml",
+              "source.helm-values keyword.control.flow.alias.yaml",
+              "source.helm-values variable.other.alias.yaml",
+              "source.helm-template keyword.control.flow.anchor.yaml",
+              "source.helm-template keyword.control.flow.alias.yaml",
+              "source.helm-template variable.other.alias.yaml"
+            ],
+            "settings": {
+              "foreground": "#E5C07B"
+            }
+          },
+          {
+            "name": "Helm: YAML punctuation",
+            "scope": [
+              "source.helm-values punctuation.definition.mapping",
+              "source.helm-values punctuation.definition.sequence",
+              "source.helm-values punctuation.definition.block.sequence.item.yaml",
+              "source.helm-values punctuation.separator",
+              "source.helm-template punctuation.definition.mapping",
+              "source.helm-template punctuation.definition.sequence",
+              "source.helm-template punctuation.definition.block.sequence.item.yaml",
+              "source.helm-template punctuation.separator"
+            ],
+            "settings": {
+              "foreground": "#BCBEC4"
+            }
+          },
+          {
+            "name": "Helm: {{ }} delimiters",
+            "scope": [
+              "punctuation.section.embedded.begin.helm",
+              "punctuation.section.embedded.end.helm"
+            ],
+            "settings": {
+              "foreground": "#CF8E6D",
+              "fontStyle": "bold"
+            }
+          },
+          {
+            "name": "Helm: if / range / with / end",
+            "scope": [
+              "keyword.control.helm"
+            ],
+            "settings": {
+              "foreground": "#CF8E6D"
+            }
+          },
+          {
+            "name": "Helm: functions (include, toYaml, quote)",
+            "scope": [
+              "support.function.helm"
+            ],
+            "settings": {
+              "foreground": "#E5C07B"
+            }
+          },
+          {
+            "name": "Helm: .Values / .Release / .Chart",
+            "scope": [
+              "variable.language.helm"
+            ],
+            "settings": {
+              "foreground": "#56A8F5",
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "name": "Helm: value path segments",
+            "scope": [
+              "variable.other.member.helm"
+            ],
+            "settings": {
+              "foreground": "#56A8F5"
+            }
+          },
+          {
+            "name": "Helm: $variables",
+            "scope": [
+              "variable.other.helm"
+            ],
+            "settings": {
+              "foreground": "#BCBEC4",
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "name": "Helm: pipes and assignment",
+            "scope": [
+              "keyword.operator.helm"
+            ],
+            "settings": {
+              "foreground": "#BCBEC4"
+            }
+          },
+          {
+            "name": "Helm: strings in actions",
+            "scope": [
+              "string.quoted.double.helm",
+              "string.quoted.raw.helm"
+            ],
+            "settings": {
+              "foreground": "#6AAB73"
+            }
+          },
+          {
+            "name": "Helm: numbers in actions",
+            "scope": [
+              "constant.numeric.helm"
+            ],
+            "settings": {
+              "foreground": "#2AACB8"
+            }
+          },
+          {
+            "name": "Helm: true / false / nil",
+            "scope": [
+              "constant.language.helm"
+            ],
+            "settings": {
+              "foreground": "#CF8E6D"
+            }
+          },
+          {
+            "name": "Helm: {{/* comments */}}",
+            "scope": [
+              "comment.block.helm"
+            ],
+            "settings": {
+              "foreground": "#7A7E85",
+              "fontStyle": "italic"
+            }
+          }
+        ]
+      },
+      "[helm-values]": {
+        "editor.bracketPairColorization.enabled": false
+      },
+      "[helm-template]": {
+        "editor.bracketPairColorization.enabled": false
+      }
+    }
+  },
+  "files": [
+    "README.md",
+    "icons/**"
+  ],
+  "scripts": {
+    "build:icons": "node scripts/build-icons.mjs"
+  }
+}

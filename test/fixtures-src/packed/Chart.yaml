@@ -1,0 +1,4 @@
+apiVersion: v2
+name: packed
+version: 0.1.0
+description: Subchart that only exists as charts/packed-0.1.0.tgz in the packaged fixture (rebuild with `helm package test/fixtures-src/packed -d test/fixtures/packaged/charts`).

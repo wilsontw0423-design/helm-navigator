@@ -1,0 +1,8 @@
+{
+  "name": "Helm Ignore",
+  "scopeName": "source.helmignore",
+  "patterns": [
+    { "name": "comment.line.number-sign.helmignore", "match": "^\\s*#.*$" },
+    { "name": "keyword.operator.negation.helmignore", "match": "^!" }
+  ]
+}

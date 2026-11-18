@@ -1,0 +1,251 @@
+{
+  "name": "helm-navigator",
+  "displayName": "Helm Navigator",
+  "description": "Formatter and cross-chart navigation for Helm charts: values.yaml, templates, _helpers.tpl, and parent/child (umbrella/sub) charts.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wilsontw0423-design/helm-navigator.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "helm",
+    "kubernetes",
+    "chart",
+    "values.yaml",
+    "go template"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/Chart.yaml",
+    "onLanguage:helm-template",
+    "onLanguage:yaml",
+    "onLanguage:helm-values"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "helm-template",
+        "aliases": [
+          "Helm Template",
+          "helm-template"
+        ],
+        "extensions": [
+          ".tpl"
+        ],
+        "filenamePatterns": [
+          "**/templates/**/*.yaml",
+          "**/templates/**/*.yml",
+          "**/templates/**/*.tpl",
+          "**/templates/NOTES.txt"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "helm-values",
+        "aliases": [
+          "Helm Values",
+          "helm-values"
+        ],
+        "configuration": "./language-configuration-values.json"
+      },
+      {
+        "id": "helmignore",
+        "aliases": [
+          "Helm Ignore"
+        ],
+        "filenames": [
+          ".helmignore"
+        ],
+        "configuration": "./language-configuration-ignore.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "helm-template",
+        "scopeName": "source.helm-template",
+        "path": "./syntaxes/helm-template.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.helm": "helm-template"
+        }
+      },
+      {
+        "language": "helm-values",
+        "scopeName": "source.helm-values",
+        "path": "./syntaxes/helm-values.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.helm": "helm-template"
+        }
+      },
+      {
+        "scopeName": "template.helm.injection",
+        "path": "./syntaxes/helm-template.injection.json",
+        "injectTo": [
+          "source.helm-template",
+          "source.helm-values"
+        ]
+      },
+      {
+        "language": "helmignore",
+        "scopeName": "source.helmignore",
+        "path": "./syntaxes/helmignore.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Helm Navigator",
+      "properties": {
+        "helmNavigator.format.yaml": {
+          "type": "boolean",
+          "default": true,
+          "description": "Format pure YAML chart files (Chart.yaml, Chart.lock, requirements.yaml, values*.yaml). The result is discarded if the parsed data or comments would change."
+        },
+        "helmNavigator.format.normalizeActions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Normalize whitespace inside template actions, e.g. `{{.Values.x|quote}}` -> `{{ .Values.x | quote }}`. Never changes rendered output."
+        },
+        "helmNavigator.format.tplIndentControlActions": {
+          "type": "boolean",
+          "default": true,
+          "description": "In .tpl files, indent lines that consist only of a left-trimmed action (`{{- if ... }}`) by control-structure nesting depth. Safe because `{{-` removes the preceding whitespace."
+        },
+        "helmNavigator.format.templateIndentControlActions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Same as tplIndentControlActions, but for templates/*.yaml. Off by default because many charts align control actions with the YAML they guard."
+        },
+        "helmNavigator.valuesFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "values.yaml"
+          ],
+          "description": "Additional values files (relative to each chart directory) used for navigation, in increasing precedence order, applied to every environment. The chart's own values.yaml is always the lowest layer. Example: [\"values-common.yaml\"]."
+        },
+        "helmNavigator.environments": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "markdownDescription": "Deployment environments, each a chain of values files (relative to each chart directory, increasing precedence) layered on top of `values.yaml` and `helmNavigator.valuesFiles` — the files you pass with `helm -f`. Hover shows the effective value per environment; go to definition, references, rename and diagnostics cover every environment. Example:\n```json\n{\n  \"prod\": [\"environments/values.yaml\", \"environments/prod/values.yaml\"],\n  \"uat\": [\"environments/uat/values.yaml\"]\n}\n```",
+          "examples": [
+            {
+              "prod": [
+                "environments/values.yaml",
+                "environments/prod/values.yaml"
+              ],
+              "uat": [
+                "environments/uat/values.yaml"
+              ]
+            }
+          ]
+        },
+        "helmNavigator.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn on template references to `.Values` keys that no values file sets (except `*` paths, refs guarded by `default`/`required`, and keys under an open `{}`/`[]`/`null` value), and hint values keys that no template in the chart tree reads. Charts unpacked from `charts/*.tgz` and library charts are not checked."
+        },
+        "helmNavigator.assignLanguages": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Inside a chart (a folder with `Chart.yaml` above the file), open templates as **Helm Template** and values files (`values*.yaml`, `*-values.yaml`, `helmNavigator.valuesFiles`, `helmNavigator.environments`) as **Helm Values**, even when `files.associations` maps `*.yaml` to `yaml`. Files outside charts are left as they are. Helm Values files are not validated by Red Hat YAML / JSON Schema."
+        },
+        "helmNavigator.autoSetDefaultFormatter": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "always",
+            "never"
+          ],
+          "default": "ask",
+          "enumDescriptions": [
+            "Ask once per workspace that contains a Helm chart",
+            "Silently set it in every workspace that contains a Helm chart",
+            "Never change workspace settings"
+          ],
+          "description": "When a workspace contains a Helm chart, set Helm Navigator as the workspace default formatter for [yaml], [helm-template] and [helmignore] (written to .vscode/settings.json)."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "files.associations": {
+        "**/templates/**/*.yaml": "helm-template",
+        "**/templates/**/*.yml": "helm-template",
+        "**/templates/**/*.tpl": "helm-template",
+        "**/templates/NOTES.txt": "helm-template",
+        "**/values.yaml": "helm-values",
+        "**/values-*.yaml": "helm-values",
+        "**/*-values.yaml": "helm-values",
+        "**/values_*.yaml": "helm-values",
+        "**/*_values.yaml": "helm-values",
+        "**/values.*.yaml": "helm-values",
+        "**/*.values.yaml": "helm-values",
+        "**/values.yml": "helm-values",
+        "**/values-*.yml": "helm-values",
+        "**/*-values.yml": "helm-values",
+        "**/values_*.yml": "helm-values",
+        "**/*_values.yml": "helm-values",
+        "**/values.*.yml": "helm-values",
+        "**/*.values.yml": "helm-values"
+      },
+      "[helm-template]": {
+        "editor.defaultFormatter": "local.helm-navigator",
+        "editor.definitionLinkOpensInPeek": true
+      },
+      "[helmignore]": {
+        "editor.defaultFormatter": "local.helm-navigator"
+      },
+      "[helm-values]": {
+        "editor.defaultFormatter": "local.helm-navigator",
+        "editor.definitionLinkOpensInPeek": true
+      }
+    },
+    "commands": [
+      {
+        "command": "helmNavigator.reindex",
+        "title": "Helm Navigator: Re-index Charts"
+      },
+      {
+        "command": "helmNavigator.useAsDefaultFormatter",
+        "title": "Helm Navigator: Use as Default Formatter in This Workspace"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "verify:render": "node scripts/verify-render.mjs",
+    "package": "npm run build && vsce package --no-dependencies --skip-license",
+    "vscode:prepublish": "npm run build",
+    "package:colors": "cd colors && vsce package --no-dependencies --skip-license"
+  },
+  "dependencies": {
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "~1.90.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

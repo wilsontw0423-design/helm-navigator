@@ -1,0 +1,4 @@
+replicas: 3
+prodOnly: true
+sub:
+  port: 443

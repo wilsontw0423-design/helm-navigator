@@ -1,0 +1,4 @@
+# shared values (prod layers environments/prod/values.yaml on top)
+replicas: 1
+image:
+  tag: "1.0"
