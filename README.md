@@ -10,13 +10,23 @@ templates, helpers and values files, and a live `helm template` preview.
 1. Download from [Releases](https://github.com/wilsontw0423-design/helm-navigator/releases/latest):
    - `helm-navigator-<version>.vsix`: the extension (required).
    - `helm-navigator-colors-<version>.vsix`: colors and file icons (optional).
-2. Install the extension first, then the colors package (it depends on the extension): in the Extensions view,
-   open the `…` menu and choose *Install from VSIX…*. In VS Code you can also run:
+2. Install the extension first, then the colors package (it depends on the extension). The steps are the same in
+   VS Code and Antigravity IDE: open the Extensions view, click the `…` menu at the top, choose
+   *Install from VSIX…*, and select the downloaded file. Or from a terminal:
 
-   ```bash
-   code --install-extension helm-navigator-0.2.0.vsix
-   code --install-extension helm-navigator-colors-0.1.0.vsix
-   ```
+   - **VS Code**
+
+     ```bash
+     code --install-extension helm-navigator-0.2.0.vsix
+     code --install-extension helm-navigator-colors-0.1.0.vsix
+     ```
+
+   - **Antigravity IDE** (macOS; its CLI is inside the app bundle)
+
+     ```bash
+     "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" --install-extension helm-navigator-0.2.0.vsix
+     "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" --install-extension helm-navigator-colors-0.1.0.vsix
+     ```
 
 3. Open the Command Palette (`Cmd+Shift+P`, or `Ctrl+Shift+P` on Windows / Linux) and run *Developer: Reload Window*.
 4. Open a folder that contains a chart (`Chart.yaml`). Accept the prompt to use Helm Navigator as the formatter for
