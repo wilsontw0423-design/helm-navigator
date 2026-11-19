@@ -10,9 +10,18 @@ templates, helpers and values files, and a live `helm template` preview.
 1. Download from [Releases](https://github.com/wilsontw0423-design/helm-navigator/releases/latest):
    - `helm-navigator-<version>.vsix`: the extension (required).
    - `helm-navigator-colors-<version>.vsix`: colors and file icons (optional).
-2. Install the extension first, then the colors package (it depends on the extension). The steps are the same in
-   VS Code and Antigravity IDE: open the Extensions view, click the `…` menu at the top, choose
-   *Install from VSIX…*, and select the downloaded file. Or from a terminal:
+2. Install the extension first, then the colors package (it depends on the extension).
+
+   **No terminal needed** (same in VS Code and Antigravity IDE): open the Extensions view, click the `…` menu at
+   the top, choose *Install from VSIX…*, and select the downloaded file; then do the same for the colors package.
+   You can also run *Extensions: Install from VSIX…* from the Command Palette.
+
+   **Or from a terminal**: the commands use bare file names, so first go to the folder you downloaded them to
+   (otherwise you get `ENOENT: no such file or directory`):
+
+   ```bash
+   cd ~/Downloads
+   ```
 
    - **VS Code**
 
