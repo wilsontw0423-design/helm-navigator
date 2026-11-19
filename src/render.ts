@@ -30,7 +30,8 @@ import {
  * cached and switching between its templates only re-filters it.
  */
 const SCHEME = 'helm-rendered';
-const PREVIEW = vscode.Uri.from({ scheme: SCHEME, path: '/helm template preview.yaml' });
+/** The preview uses the Helm Values language: YAML highlighting with the Helm colors, no YAML/JSON Schema checks. */
+const PREVIEW_LANGUAGE = 'helm-values';
 const ENV_KEY = 'helmNavigator.renderEnvironment:';
 const ROOT_KEY = 'helmNavigator.renderRoot:';
 const RELEASE_KEY = 'helmNavigator.renderRelease:';
@@ -96,8 +97,12 @@ export function registerRender(
   getIndex: () => HelmIndex,
   isTemplateFile: (file: string) => boolean,
 ): void {
-  let text = '';
+  /** Content of each preview document; the tab title names the template and environment. */
+  const texts = new Map<string, string>();
+  /** The preview document currently shown (one preview tab at a time). */
+  let current: vscode.Uri | undefined;
   const changed = new vscode.EventEmitter<vscode.Uri>();
+  const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   const diagnostics = vscode.languages.createDiagnosticCollection('helm-template');
   /** Files that got a render diagnostic, per root chart directory. */
   const diagnosed = new Map<string, vscode.Uri[]>();
@@ -109,14 +114,16 @@ export function registerRender(
   /** Increases with every update, so a slow helm run cannot overwrite a newer view. */
   let seq = 0;
 
-  const previewVisible = () => vscode.window.visibleTextEditors.some((e) => e.document.uri.toString() === PREVIEW.toString());
-  const setText = (t: string) => {
-    text = t;
-    changed.fire(PREVIEW);
+  const previewEditor = () => vscode.window.visibleTextEditors.find((e) => e.document.uri.scheme === SCHEME);
+  const previewVisible = () => !!previewEditor();
+  const setText = (uri: vscode.Uri, t: string) => {
+    texts.set(uri.toString(), t);
+    changed.fire(uri);
   };
 
   context.subscriptions.push(
     changed,
+    status,
     diagnostics,
     // A render error describes the file as it was when helm ran: drop it as soon as the file is edited.
     vscode.workspace.onDidChangeTextDocument((e) => {
@@ -124,7 +131,7 @@ export function registerRender(
     }),
     vscode.workspace.registerTextDocumentContentProvider(SCHEME, {
       onDidChange: changed.event,
-      provideTextDocumentContent: () => text,
+      provideTextDocumentContent: (uri) => texts.get(uri.toString()) ?? '',
     }),
   );
 
@@ -350,25 +357,89 @@ export function registerRender(
     view = v;
     const out = await outputOf(v.root.root, v.env);
     if (my !== seq) return;
-    setText(previewText(v, out));
-    if (open && !previewVisible()) {
-      const doc = await vscode.workspace.openTextDocument(PREVIEW);
-      if (doc.languageId !== 'yaml') await vscode.languages.setTextDocumentLanguage(doc, 'yaml');
-      await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true, preview: false });
-    }
+    const uri = uriFor(v);
+    setText(uri, previewText(v, out));
+    updateStatus(v, out);
+    if (open || previewVisible()) await reveal(uri);
+  };
+
+  /** Shows `uri` in the preview tab: replaces the previous preview document in its editor group. */
+  const reveal = async (uri: vscode.Uri) => {
+    const shown = previewEditor();
+    if (shown?.document.uri.toString() === uri.toString()) return;
+    let doc = await vscode.workspace.openTextDocument(uri);
+    if (doc.languageId !== PREVIEW_LANGUAGE) doc = await vscode.languages.setTextDocumentLanguage(doc, PREVIEW_LANGUAGE);
+    await vscode.window.showTextDocument(doc, {
+      viewColumn: shown?.viewColumn ?? vscode.ViewColumn.Beside,
+      preserveFocus: true,
+      preview: false,
+    });
+    current = uri;
+    // Close the other preview tabs, so the preview stays one tab that changes title.
+    const stale = vscode.window.tabGroups.all
+      .flatMap((g) => g.tabs)
+      .filter((t) => t.input instanceof vscode.TabInputText && t.input.uri.scheme === SCHEME && t.input.uri.toString() !== uri.toString());
+    if (stale.length) await vscode.window.tabGroups.close(stale, true);
+    for (const t of stale) texts.delete((t.input as vscode.TabInputText).uri.toString());
+  };
+
+  /** Short environment label for titles: `environments/hk/prod/values.yaml` → `hk/prod`. */
+  const envLabel = (env: string | null) => {
+    if (env === null) return 'values.yaml';
+    let s = env.replace(/\\/g, '/');
+    if (/\/values\.ya?ml$/i.test(s)) s = s.replace(/\/values\.ya?ml$/i, '');
+    else s = s.replace(/\.ya?ml$/i, '');
+    const parts = s.split('/');
+    if (parts.length > 1 && /^env/i.test(parts[0])) parts.shift();
+    return parts.join('/') || env;
+  };
+
+  /** One document per template / chart + environment, so the tab title says what is previewed. */
+  const uriFor = (v: View): vscode.Uri => {
+    const what = v.kind === 'template' ? path.basename(v.file!).replace(/\.(ya?ml|tpl|txt)$/i, '') : `chart ${v.chart.name}`;
+    const key = [v.root.root.dir, v.kind, v.file ?? v.chart.dir, v.env ?? ''].join('|');
+    return vscode.Uri.from({ scheme: SCHEME, path: `/${what} · ${envLabel(v.env).replace(/\//g, '∕')}`, query: encodeURIComponent(key) });
+  };
+
+  /** Status bar: what the preview shows and with which parameters; click to choose another environment. */
+  const updateStatus = (v: View, out: Output) => {
+    const r = releaseOf(v.root.root, v.env);
+    const s = summary(v, out);
+    status.text = `$(open-preview) ${v.kind === 'template' ? path.basename(v.file!) : v.chart.name} · ${envLabel(v.env)} · ${r.releaseName ?? DEFAULT_RELEASE_NAME}${r.namespace ? ` / ${r.namespace}` : ''}`;
+    const md = new vscode.MarkdownString(undefined, true);
+    md.appendMarkdown(`${v.kind === 'template' ? 'template' : 'chart'}: \`${s.target}\`  \n`);
+    md.appendMarkdown(`values: \`${s.values}\`  \n`);
+    md.appendMarkdown(`release: \`${s.release}\`  \n`);
+    md.appendMarkdown(`namespace: \`${s.namespace}\`\n\n`);
+    md.appendMarkdown('點一下換環境或 release / namespace');
+    status.tooltip = md;
+    status.command =
+      v.kind === 'template'
+        ? { title: 'Render', command: 'helmNavigator.renderTemplate', arguments: [vscode.Uri.file(v.file!)] }
+        : { title: 'Render', command: 'helmNavigator.renderChart', arguments: [vscode.Uri.file(v.chart.chartFile)] };
+    status.show();
+  };
+
+  /** What the preview shows, in four short values (header lines and status bar tooltip). */
+  const summary = (v: View, out: Output) => {
+    const root = v.root.root;
+    const r = releaseOf(root, v.env);
+    return {
+      // `<root>/templates/x.yaml`, or `<root>/charts/<alias>/templates/x.yaml` for a subchart.
+      target: v.kind === 'template' ? sourcePathOf(v.root, v.chart, v.file!) : sourcePrefix(v.root),
+      values: ['values.yaml', ...out.valuesFiles.map((f) => path.relative(root.dir, f))].join(' + '),
+      release: r.releaseName ?? `${DEFAULT_RELEASE_NAME}（預設）`,
+      namespace: r.namespace ?? '（未指定）',
+    };
   };
 
   const previewText = (v: View, out: Output): string => {
-    const root = v.root.root;
-    const rel = (f: string) => path.relative(root.dir, f) || '.';
-    const what = v.kind === 'template' ? path.relative(v.chart.dir, v.file!) : `chart ${v.chart.name}`;
-    const follow = v.kind === 'template' ? '切換到其他 template 時跟著切換' : '切換到其他 chart 時跟著切換';
+    const s = summary(v, out);
     const lines = [
-      `# helm template：${what}（${follow}；存檔後自動重新渲染）`,
-      `# 根 chart：${root.name}（${root.dir}）${v.root.aliases.length ? `，路徑 ${sourcePrefix(v.root)}` : ''}`,
-      `# values：${['values.yaml', ...out.valuesFiles.map(rel)].join(' + ')}${v.env ? `（環境 ${v.env}）` : ''}`,
-      `# ${releaseLabel(releaseOf(root, v.env))}（修改：預覽按鈕選單最後一項，或 Helm Navigator: Set Release Name / Namespace）`,
-      `# 指令：helm ${out.args.map((a) => (path.isAbsolute(a) ? rel(a) : a)).join(' ')}`,
+      `# ${v.kind === 'template' ? 'template' : 'chart'}: ${s.target}`,
+      `# values: ${s.values}`,
+      `# release: ${s.release}`,
+      `# namespace: ${s.namespace}`,
     ];
     if (out.fatal) return [...lines, `# ❌ ${out.fatal}`].join('\n') + '\n';
     for (const p of out.problems) lines.push(`# ❌ ${describe(p)}`);
@@ -393,6 +464,14 @@ export function registerRender(
       '# 按編輯器右上角的預覽按鈕，或執行 Helm Navigator: Render This Template 來選擇。',
     ].join('\n') + '\n';
 
+  // The status bar item belongs to the preview: hide it while no preview is visible.
+  context.subscriptions.push(
+    vscode.window.onDidChangeVisibleTextEditors(() => {
+      if (previewVisible() && view) status.show();
+      else status.hide();
+    }),
+  );
+
   // Follow the active editor while the preview is visible.
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
@@ -407,7 +486,8 @@ export function registerRender(
       if (v === 'choose') {
         ++seq;
         view = undefined;
-        setText(choosePrompt(file, chart));
+        status.hide();
+        if (current) setText(current, choosePrompt(file, chart));
       } else if (v) await show(v, false);
     }),
   );

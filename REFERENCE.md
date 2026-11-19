@@ -90,6 +90,10 @@ beside the editor as a read-only YAML document (editor title button, Explorer co
   says how to choose). After *Render Chart* it follows charts instead. Saving any file of the chart tree renders
   again. One helm run per root chart and environment is cached, so switching between its templates is instant;
   pressing the button always runs helm again (and lets you change the environment).
+- **What is previewed**: the tab title names the template (or chart) and the environment, e.g. `statefulset · stage`;
+  the status bar shows template, environment, release and namespace (hover for the values chain, click to choose
+  another environment). The preview uses the Helm Values language, so it gets the Helm colors and no YAML /
+  JSON Schema checks.
 - Helm reads files from disk: with unsaved changes in the chart tree you are offered *Save All*, which renders again.
 
 ### Formatter

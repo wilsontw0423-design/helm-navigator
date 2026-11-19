@@ -26,14 +26,14 @@ templates, helpers and values files, and a live `helm template` preview.
    - **VS Code**
 
      ```bash
-     code --install-extension helm-navigator-0.2.0.vsix
+     code --install-extension helm-navigator-0.3.0.vsix
      code --install-extension helm-navigator-colors-0.1.0.vsix
      ```
 
    - **Antigravity IDE** (macOS; its CLI is inside the app bundle)
 
      ```bash
-     "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" --install-extension helm-navigator-0.2.0.vsix
+     "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" --install-extension helm-navigator-0.3.0.vsix
      "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide" --install-extension helm-navigator-colors-0.1.0.vsix
      ```
 

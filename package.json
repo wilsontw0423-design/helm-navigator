@@ -2,7 +2,7 @@
   "name": "helm-navigator",
   "displayName": "Helm Navigator",
   "description": "Helm chart support: dedicated languages for templates, helpers and values files, bidirectional navigation with multi-environment values, and a live helm template preview.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "local",
   "private": true,
   "license": "MIT",
