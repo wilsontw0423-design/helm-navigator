@@ -15,6 +15,7 @@ templates, helpers and values files, and a live `helm template` preview.
 
    ```bash
    code --install-extension helm-navigator-0.2.0.vsix
+   code --install-extension helm-navigator-colors-0.1.0.vsix
    ```
 
 3. Open the Command Palette (`Cmd+Shift+P`, or `Ctrl+Shift+P` on Windows / Linux) and run *Developer: Reload Window*.
